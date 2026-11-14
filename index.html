@@ -34,11 +34,11 @@
           <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
         </button>
         <button class="music-btn" id="music-toggle" type="button" aria-label="Mayin musiqani yoqish" aria-pressed="false">
-          ♫ Mayin musiqa
+          ♫ I Wanna Be Yours
         </button>
       </div>
 
-      <audio id="bg-music" loop preload="auto" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9f3d50.mp3"></audio>
+      <audio id="bg-music" loop preload="auto" autoplay playsinline src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9f3d50.mp3"></audio>
 
       <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Agar yana qayta tanlash imkonim bo‘lganida ham, qalbim yana seni tanlagan bo‘lardi. Sen — mening eng go‘zal tasodifim va eng aziz tilagimsan. ❤️</p>
       <p class="imzo">Butun mehrim bilan — faqat sen uchun</p>
@@ -63,20 +63,33 @@
     const bgMusic = document.getElementById('bg-music');
     bgMusic.volume = 0.12;
 
+    const startMusic = async () => {
+      try {
+        await bgMusic.play();
+        musicToggle.textContent = '♫ To‘xtatish';
+        musicToggle.setAttribute('aria-label', 'Musiqani to‘xtatish');
+        musicToggle.setAttribute('aria-pressed', 'true');
+      } catch (error) {
+        console.log('Autoplay blocked by browser, user interaction is required:', error);
+        musicToggle.textContent = '♫ I Wanna Be Yours';
+      }
+    };
+
+    startMusic();
+
     musicToggle.addEventListener('click', async () => {
       if (bgMusic.paused) {
         try {
           await bgMusic.play();
-          musicToggle.textContent = '♫ Musiqani o‘chirish';
-          musicToggle.setAttribute('aria-label', 'Musiqani o‘chirish');
+          musicToggle.textContent = '♫ To‘xtatish';
+          musicToggle.setAttribute('aria-label', 'Musiqani to‘xtatish');
           musicToggle.setAttribute('aria-pressed', 'true');
         } catch (error) {
-          console.log('Musiqani ijro etib bo‘lmadi:', error);
-          musicToggle.textContent = '♫ Musiqa xatoligi';
+          console.log('Musiqa ijro etib bo‘lmadi:', error);
         }
       } else {
         bgMusic.pause();
-        musicToggle.textContent = '♫ Mayin musiqa';
+        musicToggle.textContent = '♫ I Wanna Be Yours';
         musicToggle.setAttribute('aria-label', 'Mayin musiqani yoqish');
         musicToggle.setAttribute('aria-pressed', 'false');
       }
