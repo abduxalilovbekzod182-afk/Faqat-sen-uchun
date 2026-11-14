@@ -3,59 +3,73 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#050308">
-  <meta name="description" content="Turli tillarda yozilgan sevgi so‘zlari bilan yurak animatsiyasi.">
+  <meta name="theme-color" content="#09040b">
+  <meta name="description" content="Turli tillardagi sevgi so‘zlari bilan porlayotgan 3D yurak.">
   <title>Faqat sen uchun ❤️</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- YouTube musiqasi ko‘rinmaydigan fonda ulanadi. Ovozli autoplay brauzer tomonidan bloklanishi mumkin. -->
-  <div class="audio-bg" aria-hidden="true">
+  <!-- Berilgan YouTube qo‘shig‘i fon videosi sifatida ulanadi. -->
+  <div class="music-background" aria-hidden="true">
     <iframe
       id="music-player"
       title="Fon musiqasi"
       src="https://www.youtube-nocookie.com/embed/fukGbiPuBjU?autoplay=1&mute=0&controls=0&loop=1&playlist=fukGbiPuBjU&playsinline=1&enablejsapi=1"
-      allow="autoplay; encrypted-media"
+      allow="autoplay; encrypted-media; picture-in-picture"
       referrerpolicy="strict-origin-when-cross-origin">
     </iframe>
   </div>
+  <div class="background-shade" aria-hidden="true"></div>
+  <div class="bokeh" aria-hidden="true"></div>
+  <div class="particles" id="particles" aria-hidden="true"></div>
+  <div class="petals" id="petals" aria-hidden="true"></div>
 
-  <main class="sahifa">
-    <p class="ust-sarlavha">DUNYODAGI BARCHA TILLARDA…</p>
-    <h1>Faqat sen uchun</h1>
+  <main class="scene">
+    <header class="heading">
+      <p class="eyebrow">BARCHA TILLARDA BITTA TUYG‘U</p>
+      <h1>Faqat sen uchun</h1>
+    </header>
 
-    <div class="yurak-konteyner" role="img" aria-label="Turli tillarda seni sevaman deb yozilgan yurak">
-      <canvas id="sevgi-yuragi"></canvas>
-      <div class="yurak-yorugligi" aria-hidden="true"></div>
+    <div class="heart-stage" role="img" aria-label="Turli tillarda seni sevaman degan yozuvlardan yasalgan, sekin aylanayotgan nurli yurak">
+      <div class="heart-halo" aria-hidden="true"></div>
+      <div class="heart-3d">
+        <div class="heart-depth" aria-hidden="true"></div>
+        <canvas id="love-heart" aria-hidden="true"></canvas>
+        <div class="heart-glint" aria-hidden="true"></div>
+      </div>
     </div>
 
-    <p class="pastki-matn">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
-    <p class="musiqa-eslatma" id="musiqa-eslatma" aria-live="polite"></p>
+    <p class="caption">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
+    <p class="music-note" id="music-note" aria-live="polite"></p>
   </main>
 
   <script>
-    const canvas = document.getElementById('sevgi-yuragi');
+    // So‘zlar yurak konturining ichiga qatorlab joylashadi.
+    const canvas = document.getElementById('love-heart');
     const ctx = canvas.getContext('2d');
     const phrases = [
       'SENI SEVAMAN', 'I LOVE YOU', 'Я ТЕБЯ ЛЮБЛЮ', 'TE QUIERO',
       'JE T’AIME', 'ICH LIEBE DICH', 'SENI SEVIYORUM', '愛してる',
       '사랑해', 'أحبك', 'TI AMO', 'EU TE AMO', 'KOCHAM CIĘ',
-      'AŠ TAVE MYLIU', 'SZERETLEK', 'MİNI SEVİRƏM'
+      'AŠ TAVE MYLIU', 'SZERETLEK', 'MİNI SEVİRƏM', 'TE AMO'
     ];
-
-    // Yurak tenglamasi bo‘yicha matnlarni joylashtirib, shaklning chetlaridan chiqarmaymiz.
-    const words = [];
-    for (let y = -1.12; y <= 1.121; y += 0.075) {
-      for (let x = -1.24; x <= 1.241; x += 0.105) {
-        if (Math.pow(x * x + y * y - 1, 3) - x * x * y * y * y <= 0) {
-          words.push({ x, y, text: phrases[Math.floor(Math.random() * phrases.length)] });
-        }
-      }
-    }
-
     let width = 0;
     let height = 0;
     let dpr = 1;
+
+    function heartPath(scaleX, scaleY, cx, cy) {
+      ctx.beginPath();
+      for (let i = 0; i <= 360; i++) {
+        const t = (i / 360) * Math.PI * 2;
+        const x = 16 * Math.pow(Math.sin(t), 3) / 17;
+        const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17;
+        const px = cx + x * scaleX;
+        const py = cy - y * scaleY;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+    }
+
     function resize() {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
@@ -70,66 +84,104 @@
     function drawHeart() {
       if (!width || !height) return;
       ctx.clearRect(0, 0, width, height);
-      const scaleX = Math.min(width * 0.43, height * 0.39);
+      const scaleX = Math.min(width * 0.43, height * 0.42);
       const scaleY = Math.min(height * 0.43, width * 0.48);
       const cx = width / 2;
-      const cy = height / 2 + scaleY * 0.02;
+      const cy = height / 2 + scaleY * 0.015;
 
-      // Yurak konturi yumshoq nur bilan aniq ko‘rinadi.
-      ctx.beginPath();
-      for (let i = 0; i <= 240; i++) {
-        const t = (i / 240) * Math.PI * 2;
-        const x = 16 * Math.pow(Math.sin(t), 3) / 17;
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17;
-        const px = cx + x * scaleX;
-        const py = cy + y * scaleY;
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(126, 28, 76, 0.12)';
-      ctx.shadowColor = 'rgba(255, 91, 157, 0.7)';
-      ctx.shadowBlur = 28;
+      heartPath(scaleX, scaleY, cx, cy);
+      ctx.save();
+      ctx.shadowColor = 'rgba(255, 75, 151, .65)';
+      ctx.shadowBlur = 30;
+      const base = ctx.createLinearGradient(0, cy - scaleY, 0, cy + scaleY);
+      base.addColorStop(0, 'rgba(255, 129, 184, .72)');
+      base.addColorStop(.48, 'rgba(127, 28, 79, .84)');
+      base.addColorStop(1, 'rgba(39, 8, 35, .92)');
+      ctx.fillStyle = base;
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(255, 165, 203, 0.58)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+      ctx.clip();
 
+      const rowStep = Math.max(12, Math.min(16, width * .042));
+      const fontSize = Math.max(7, Math.min(10, width * .026));
+      ctx.font = `600 ${fontSize}px Arial, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const fontSize = Math.max(7, Math.min(10, width * 0.026));
-      ctx.font = `600 ${fontSize}px Arial, sans-serif`;
-      words.forEach((word, i) => {
-        const px = cx + word.x * scaleX;
-        const py = cy - word.y * scaleY;
-        const shimmer = 0.76 + Math.sin(Date.now() / 900 + i * 0.35) * 0.18;
-        ctx.fillStyle = `rgba(255, ${190 + (i % 3) * 12}, ${218 + (i % 2) * 16}, ${shimmer})`;
-        ctx.shadowColor = 'rgba(255, 126, 185, 0.55)';
-        ctx.shadowBlur = 5;
-        ctx.fillText(word.text, px, py, fontSize * 8.8);
-      });
+      let row = 0;
+      for (let y = cy - scaleY * .91; y <= cy + scaleY * .9; y += rowStep) {
+        const normalizedY = (cy - y) / scaleY;
+        const span = scaleX * Math.max(.08, Math.sqrt(Math.max(0, 1 - normalizedY * normalizedY)) * 1.12);
+        const gap = Math.max(38, fontSize * 6.4);
+        let col = 0;
+        for (let x = cx - span + gap / 2; x < cx + span; x += gap) {
+          const phrase = phrases[(row * 3 + col * 5 + Math.floor(row / 2)) % phrases.length];
+          const shimmer = .72 + .26 * (Math.sin(performance.now() / 900 + row * .43 + col) * .5 + .5);
+          ctx.fillStyle = `rgba(255, ${188 + (col % 3) * 15}, ${218 + (row % 2) * 18}, ${shimmer})`;
+          ctx.shadowColor = 'rgba(255, 112, 177, .72)';
+          ctx.shadowBlur = 7;
+          ctx.fillText(phrase, x, y, gap * .96);
+          col++;
+        }
+        row++;
+      }
+      ctx.restore();
+
+      heartPath(scaleX, scaleY, cx, cy);
+      ctx.strokeStyle = 'rgba(255, 209, 229, .86)';
+      ctx.lineWidth = 1.35;
+      ctx.shadowColor = 'rgba(255, 86, 164, .9)';
+      ctx.shadowBlur = 16;
+      ctx.stroke();
       ctx.shadowBlur = 0;
-      requestAnimationFrame(drawHeart);
     }
 
     window.addEventListener('resize', resize);
     resize();
 
-    // Ovozli autoplay ko‘p brauzerda bloklanadi; sahifaning ilk teginishida musiqani qayta boshlashga urinadi.
-    const musicFrame = document.getElementById('music-player');
-    let musicStarted = false;
-    function startMusic() {
-      if (musicStarted) return;
-      musicStarted = true;
-      musicFrame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'unMute', args: [] }), '*');
-      musicFrame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), '*');
+    // Mayin yaltirash zarralari va atirgul yaproqlari.
+    const particleBox = document.getElementById('particles');
+    for (let i = 0; i < 42; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'sparkle';
+      dot.style.setProperty('--x', `${Math.random() * 100}%`);
+      dot.style.setProperty('--y', `${Math.random() * 100}%`);
+      dot.style.setProperty('--delay', `${Math.random() * -8}s`);
+      dot.style.setProperty('--duration', `${4 + Math.random() * 7}s`);
+      dot.style.setProperty('--size', `${2 + Math.random() * 3}px`);
+      particleBox.appendChild(dot);
     }
-    window.addEventListener('pointerdown', startMusic, { once: true });
-    window.addEventListener('keydown', startMusic, { once: true });
+    const petalBox = document.getElementById('petals');
+    for (let i = 0; i < 13; i++) {
+      const petal = document.createElement('span');
+      petal.className = 'petal';
+      petal.style.setProperty('--left', `${Math.random() * 100}%`);
+      petal.style.setProperty('--delay', `${Math.random() * -20}s`);
+      petal.style.setProperty('--duration', `${14 + Math.random() * 16}s`);
+      petal.style.setProperty('--sway', `${-80 + Math.random() * 160}px`);
+      petalBox.appendChild(petal);
+    }
+
+    // YouTube audio autoplayga ruxsat bersa, ovozni past qilib qo‘yishga harakat qilamiz.
+    const playerFrame = document.getElementById('music-player');
+    const note = document.getElementById('music-note');
+    let playerReady = false;
+    window.onYouTubeIframeAPIReady = function () {};
+    const apiScript = document.createElement('script');
+    apiScript.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(apiScript);
+
+    function onPlayerReady(event) {
+      playerReady = true;
+      event.target.setVolume(18);
+      event.target.playVideo();
+    }
+    window.onYouTubeIframeAPIReady = function () {
+      new YT.Player('music-player', {
+        events: { onReady: onPlayerReady }
+      });
+    };
     setTimeout(() => {
-      if (!musicStarted) {
-        document.getElementById('musiqa-eslatma').textContent = 'Agar musiqa boshlanmasa, sahifaga bir marta teging — brauzer autoplayni cheklashi mumkin.';
-      }
+      if (!playerReady) note.textContent = 'Brauzer ovozli avtomatik ijroni cheklasa, qo‘shiq boshlanmasligi mumkin.';
     }, 3500);
   </script>
 </body>
