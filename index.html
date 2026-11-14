@@ -3,103 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#8f214f">
-  <meta name="description" content="Faqat sen uchun — yurakdan yozilgan sevgi izhori.">
+  <meta name="theme-color" content="#050308">
+  <meta name="description" content="Turli tillarda yozilgan sevgi so‘zlaridan yasalgan aylanib turuvchi yurak.">
   <title>Faqat sen uchun ❤️</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <video class="bg-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=80">
-    <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
-  </video>
-  <div class="overlay" aria-hidden="true"></div>
-  <div class="yulduzlar" aria-hidden="true"></div>
-  <div class="uchuvchi-yuraklar" id="uchuvchi-yuraklar" aria-hidden="true"></div>
-
   <main class="sahifa">
-    <section class="karta" aria-labelledby="sarlavha">
-      <div class="yorqin-chiziq" aria-hidden="true"></div>
-      <div class="gul-yuqori" aria-hidden="true">✿</div>
-      <div class="yurak" aria-label="Yurak">💖</div>
-      <p class="kichik-sarlavha">QALBIMDAGI ENG GO‘ZAL TUYG‘ULAR BILAN</p>
-      <h1 id="sarlavha">Faqat sen uchun</h1>
-      <div class="ajratgich" aria-hidden="true"><span>✦</span></div>
-      <p class="tilak">Ba’zan birgina insonning borligi butun olamni boshqacha ranglarda ko‘rsatadi. Sen hayotimga kirib kelganingdan beri oddiy kunlarim ham bayramdek, sukunat ham eng yoqimli kuydek tuyuladi.</p>
-      <p class="tilak ikkinchi">Tabassuming — ko‘nglimga nur, ovozing — qalbimga taskin. Har bir chiroyli lahzamda sen bor, har bir ezgu tilagimda esa sening baxtingni so‘rayman. 🌷</p>
-      <p class="tilak uchinchi">Masofalar va vaqt o‘tsa ham, qalbimdagi bu samimiy tuyg‘u o‘zgarmaydi. Sen shunchaki alohida inson emassan — sen mening eng go‘zal o‘yim, eng shirin sog‘inchim va yuragim tanlagan insonsan.</p>
-      <div class="gullar" aria-hidden="true">🌹 <span>✨</span> 🌸 <span>✨</span> 🌹</div>
-
-      <div class="tugma-wrap">
-        <button class="tugma" id="tilak-tugmasi" type="button" aria-expanded="false">
-          <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
-        </button>
-        <button class="music-btn" id="music-toggle" type="button" aria-label="Mayin musiqani yoqish" aria-pressed="false">
-          ♫ I Wanna Be Yours
-        </button>
-      </div>
-
-      <audio id="bg-music" loop preload="auto" autoplay playsinline src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9f3d50.mp3"></audio>
-
-      <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Agar yana qayta tanlash imkonim bo‘lganida ham, qalbim yana seni tanlagan bo‘lardi. Sen — mening eng go‘zal tasodifim va eng aziz tilagimsan. ❤️</p>
-      <p class="imzo">Butun mehrim bilan — faqat sen uchun</p>
-    </section>
+    <p class="ust-sarlavha">DUNYODAGI BARCHA TILLARDA…</p>
+    <h1>Faqat sen uchun</h1>
+    <div class="yurak-konteyner" role="img" aria-label="Turli tillarda seni sevaman deb yozilgan, sekin aylanayotgan yurak">
+      <canvas id="sevgi-yuragi"></canvas>
+      <div class="yurak-yorugligi" aria-hidden="true"></div>
+    </div>
+    <p class="pastki-matn">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
+    <a class="qoshiq-havolasi" href="https://www.youtube.com/watch?v=fJLQCf4mFP0" target="_blank" rel="noopener noreferrer">♫ I Wanna Be Yours — qo‘shiqni tinglash</a>
   </main>
 
   <script>
-    const hearts = document.getElementById('uchuvchi-yuraklar');
-    const heartIcons = ['♡', '♥', '❤'];
-    for (let i = 0; i < 20; i++) {
-      const heart = document.createElement('span');
-      heart.className = 'uchuvchi-yurak';
-      heart.textContent = heartIcons[i % heartIcons.length];
-      heart.style.setProperty('--left', `${Math.random() * 100}%`);
-      heart.style.setProperty('--delay', `${Math.random() * -18}s`);
-      heart.style.setProperty('--duration', `${12 + Math.random() * 12}s`);
-      heart.style.setProperty('--size', `${12 + Math.random() * 22}px`);
-      hearts.appendChild(heart);
+    const canvas = document.getElementById('sevgi-yuragi');
+    const ctx = canvas.getContext('2d');
+    const phrases = [
+      'SENI SEVAMAN', 'I LOVE YOU', 'Я ТЕБЯ ЛЮБЛЮ', 'TE QUIERO',
+      'JE T’AIME', 'ICH LIEBE DICH', 'SENI SEVIYORUM', '愛してる',
+      '사랑해', 'أحبك', 'TI AMO', 'EU TE AMO', 'Я ЛЮБЛЮ ТЕБЯ',
+      'NAKU PENDA', 'Kocham cię', 'AŠ TAVE MYLIU', 'Szeretlek'
+    ];
+    const rows = [];
+    for (let y = -1.12; y <= 1.12; y += 0.085) {
+      for (let x = -1.23; x <= 1.23; x += 0.12) {
+        const inside = Math.pow(x * x + y * y - 1, 3) - x * x * y * y * y <= 0;
+        if (inside) rows.push({ x, y, phrase: phrases[Math.floor(Math.random() * phrases.length)] });
+      }
     }
 
-    const musicToggle = document.getElementById('music-toggle');
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.12;
+    let width, height, dpr;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const box = canvas.getBoundingClientRect();
+      width = box.width;
+      height = box.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
-    const startMusic = async () => {
-      try {
-        await bgMusic.play();
-        musicToggle.textContent = '♫ To‘xtatish';
-        musicToggle.setAttribute('aria-label', 'Musiqani to‘xtatish');
-        musicToggle.setAttribute('aria-pressed', 'true');
-      } catch (error) {
-        console.log('Autoplay blocked by browser, user interaction is required:', error);
-        musicToggle.textContent = '♫ I Wanna Be Yours';
-      }
-    };
+    let angle = 0;
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      const scale = Math.min(width * 0.39, height * 0.39);
+      const cx = width / 2;
+      const cy = height / 2;
+      angle += 0.006;
+      const turn = Math.sin(angle);
+      const face = Math.cos(angle);
 
-    startMusic();
-
-    musicToggle.addEventListener('click', async () => {
-      if (bgMusic.paused) {
-        try {
-          await bgMusic.play();
-          musicToggle.textContent = '♫ To‘xtatish';
-          musicToggle.setAttribute('aria-label', 'Musiqani to‘xtatish');
-          musicToggle.setAttribute('aria-pressed', 'true');
-        } catch (error) {
-          console.log('Musiqa ijro etib bo‘lmadi:', error);
-        }
-      } else {
-        bgMusic.pause();
-        musicToggle.textContent = '♫ I Wanna Be Yours';
-        musicToggle.setAttribute('aria-label', 'Mayin musiqani yoqish');
-        musicToggle.setAttribute('aria-pressed', 'false');
-      }
-    });
-
-    document.getElementById('tilak-tugmasi').addEventListener('click', () => {
-      const wish = document.getElementById('yashirin-tilak');
-      wish.classList.toggle('ko-rinadi');
-      document.getElementById('tilak-tugmasi').setAttribute('aria-expanded', wish.classList.contains('ko-rinadi'));
-    });
+      rows.forEach((point, index) => {
+        const depth = Math.sqrt(Math.max(0, 1 - Math.min(1, point.x * point.x + point.y * point.y) * 0.45));
+        const rotatedX = point.x * face + depth * turn * 0.34;
+        const z = -point.x * turn + depth * face * 0.34;
+        const perspective = 1 / (1.3 + z * 0.16);
+        const px = cx + rotatedX * scale * perspective;
+        const py = cy - point.y * scale * perspective;
+        const alpha = Math.max(0.35, Math.min(1, 0.72 + z * 0.2));
+        const frontColor = z > -0.05 ? `rgba(255, ${168 + Math.floor(alpha * 40)}, ${205 + Math.floor(alpha * 25)}, ${alpha})` : `rgba(174, 92, 139, ${alpha * 0.78})`;
+        ctx.font = `${Math.max(7, scale * 0.052)}px Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowColor = z > 0 ? 'rgba(255, 115, 176, .8)' : 'transparent';
+        ctx.shadowBlur = z > 0 ? 8 : 0;
+        ctx.fillStyle = frontColor;
+        ctx.fillText(point.phrase, px, py);
+      });
+      ctx.shadowBlur = 0;
+      requestAnimationFrame(draw);
+    }
+    draw();
   </script>
 </body>
 </html>
