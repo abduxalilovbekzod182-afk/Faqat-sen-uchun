@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#8f214f">
-  <meta name="description" content="Faqat sen uchun — yurakdan yozilgan iliq tilaklar.">
+  <meta name="description" content="Faqat sen uchun — yurakdan yozilgan sevgi izhori.">
   <title>Faqat sen uchun ❤️</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -21,26 +21,27 @@
       <div class="yorqin-chiziq" aria-hidden="true"></div>
       <div class="gul-yuqori" aria-hidden="true">✿</div>
       <div class="yurak" aria-label="Yurak">💖</div>
-      <p class="kichik-sarlavha">ENG SAMIMIY TUYG'ULAR BILAN</p>
+      <p class="kichik-sarlavha">QALBIMDAGI ENG GO‘ZAL TUYG‘ULAR BILAN</p>
       <h1 id="sarlavha">Faqat sen uchun</h1>
       <div class="ajratgich" aria-hidden="true"><span>✦</span></div>
-      <p class="tilak">Ba'zi insonlar hayotga kirib kelib, uni yanada go'zal qiladi. Sen ham mening kunlarimga tabassum, qalbimga esa iliqlik olib kirgan insonsan.</p>
-      <p class="tilak ikkinchi">Ushbu kichik sahifa — senga atalgan samimiy bir tilak. Har doim yuzingdan tabassum arimasin, chunki sen mening eng yoqimli koinotimsan. 🌷</p>
+      <p class="tilak">Ba’zan birgina insonning borligi butun olamni boshqacha ranglarda ko‘rsatadi. Sen hayotimga kirib kelganingdan beri oddiy kunlarim ham bayramdek, sukunat ham eng yoqimli kuydek tuyuladi.</p>
+      <p class="tilak ikkinchi">Tabassuming — ko‘nglimga nur, ovozing — qalbimga taskin. Har bir chiroyli lahzamda sen bor, har bir ezgu tilagimda esa sening baxtingni so‘rayman. 🌷</p>
+      <p class="tilak uchinchi">Masofalar va vaqt o‘tsa ham, qalbimdagi bu samimiy tuyg‘u o‘zgarmaydi. Sen shunchaki alohida inson emassan — sen mening eng go‘zal o‘yim, eng shirin sog‘inchim va yuragim tanlagan insonsan.</p>
       <div class="gullar" aria-hidden="true">🌹 <span>✨</span> 🌸 <span>✨</span> 🌹</div>
 
       <div class="tugma-wrap">
-        <button class="tugma" id="tilak-tugmasi" type="button">
+        <button class="tugma" id="tilak-tugmasi" type="button" aria-expanded="false">
           <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
         </button>
-        <button class="music-btn" id="music-toggle" type="button" aria-label="Musiqa yoqish">
-          ♫ Musiqa
+        <button class="music-btn" id="music-toggle" type="button" aria-label="Mayin musiqani yoqish" aria-pressed="false">
+          ♫ Mayin musiqa
         </button>
       </div>
 
-      <audio id="bg-music" loop preload="auto" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+      <audio id="bg-music" loop preload="none" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
-      <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Sen borliging bilan olamni go'zal qilasan. ❤️</p>
-      <p class="imzo">Mehr bilan, faqat sen uchun</p>
+      <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Agar yana qayta tanlash imkonim bo‘lganida ham, qalbim yana seni tanlagan bo‘lardi. Sen — mening eng go‘zal tasodifim va eng aziz tilagimsan. ❤️</p>
+      <p class="imzo">Butun mehrim bilan — faqat sen uchun</p>
     </section>
   </main>
 
@@ -60,21 +61,24 @@
 
     const musicToggle = document.getElementById('music-toggle');
     const bgMusic = document.getElementById('bg-music');
-    let musicOn = false;
+    bgMusic.volume = 0.16;
 
     musicToggle.addEventListener('click', async () => {
-      musicOn = !musicOn;
-      musicToggle.textContent = musicOn ? '♫ Musiqa o‘chiq' : '♫ Musiqa';
-
-      try {
-        if (musicOn) {
+      if (bgMusic.paused) {
+        try {
           await bgMusic.play();
-        } else {
-          bgMusic.pause();
-          bgMusic.currentTime = 0;
+          musicToggle.textContent = '♫ Musiqani o‘chirish';
+          musicToggle.setAttribute('aria-label', 'Musiqani o‘chirish');
+          musicToggle.setAttribute('aria-pressed', 'true');
+        } catch (error) {
+          console.log('Musiqani ijro etib bo‘lmadi:', error);
+          musicToggle.textContent = 'Musiqa ijro etilmadi';
         }
-      } catch (error) {
-        console.log('Musiqa avtomatikyoqilishi bloklandi:', error);
+      } else {
+        bgMusic.pause();
+        musicToggle.textContent = '♫ Mayin musiqa';
+        musicToggle.setAttribute('aria-label', 'Mayin musiqani yoqish');
+        musicToggle.setAttribute('aria-pressed', 'false');
       }
     });
 
