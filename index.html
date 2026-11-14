@@ -9,7 +9,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="orqa-fon" aria-hidden="true"></div>
+  <video class="bg-video" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=80">
+    <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
+  </video>
+  <div class="overlay" aria-hidden="true"></div>
   <div class="yulduzlar" aria-hidden="true"></div>
   <div class="uchuvchi-yuraklar" id="uchuvchi-yuraklar" aria-hidden="true"></div>
 
@@ -22,11 +25,20 @@
       <h1 id="sarlavha">Faqat sen uchun</h1>
       <div class="ajratgich" aria-hidden="true"><span>✦</span></div>
       <p class="tilak">Ba'zi insonlar hayotga kirib kelib, uni yanada go'zal qiladi. Sen ham mening kunlarimga tabassum, qalbimga esa iliqlik olib kirgan insonsan.</p>
-      <p class="tilak ikkinchi">Ushbu kichik sahifa — senga atalgan samimiy bir tilak. Har doim yuzingdan tabassum arimasin. 🌷</p>
+      <p class="tilak ikkinchi">Ushbu kichik sahifa — senga atalgan samimiy bir tilak. Har doim yuzingdan tabassum arimasin, chunki sen mening eng yoqimli koinotimsan. 🌷</p>
       <div class="gullar" aria-hidden="true">🌹 <span>✨</span> 🌸 <span>✨</span> 🌹</div>
-      <button class="tugma" id="tilak-tugmasi" type="button">
-        <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
-      </button>
+
+      <div class="tugma-wrap">
+        <button class="tugma" id="tilak-tugmasi" type="button">
+          <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
+        </button>
+        <button class="music-btn" id="music-toggle" type="button" aria-label="Musiqa yoqish">
+          ♫ Musiqa
+        </button>
+      </div>
+
+      <audio id="bg-music" loop preload="auto" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
       <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Sen borliging bilan olamni go'zal qilasan. ❤️</p>
       <p class="imzo">Mehr bilan, faqat sen uchun</p>
     </section>
@@ -45,6 +57,26 @@
       heart.style.setProperty('--size', `${12 + Math.random() * 22}px`);
       hearts.appendChild(heart);
     }
+
+    const musicToggle = document.getElementById('music-toggle');
+    const bgMusic = document.getElementById('bg-music');
+    let musicOn = false;
+
+    musicToggle.addEventListener('click', async () => {
+      musicOn = !musicOn;
+      musicToggle.textContent = musicOn ? '♫ Musiqa o‘chiq' : '♫ Musiqa';
+
+      try {
+        if (musicOn) {
+          await bgMusic.play();
+        } else {
+          bgMusic.pause();
+          bgMusic.currentTime = 0;
+        }
+      } catch (error) {
+        console.log('Musiqa avtomatikyoqilishi bloklandi:', error);
+      }
+    });
 
     document.getElementById('tilak-tugmasi').addEventListener('click', () => {
       const wish = document.getElementById('yashirin-tilak');
