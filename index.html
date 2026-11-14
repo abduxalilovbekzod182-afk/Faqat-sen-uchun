@@ -4,31 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#050308">
-  <meta name="description" content="Turli tillarda yozilgan sevgi so‘zlaridan yasalgan aylanib turuvchi yurak.">
+  <meta name="description" content="Turli tillarda yozilgan sevgi so‘zlari bilan aylanib turuvchi yurak">
   <title>Faqat sen uchun ❤️</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="video-bg" aria-hidden="true">
+    <iframe
+      src="https://www.youtube.com/embed/fukGbiPuBjU?autoplay=1&mute=1&loop=1&playlist=fukGbiPuBjU&controls=0&rel=0&showinfo=0&modestbranding=1"
+      title="Background music"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <div class="overlay" aria-hidden="true"></div>
+
   <main class="sahifa">
     <p class="ust-sarlavha">DUNYODAGI BARCHA TILLARDA…</p>
     <h1>Faqat sen uchun</h1>
+
     <div class="yurak-konteyner" role="img" aria-label="Turli tillarda seni sevaman deb yozilgan, sekin aylanayotgan yurak">
       <canvas id="sevgi-yuragi"></canvas>
       <div class="yurak-yorugligi" aria-hidden="true"></div>
     </div>
+
     <p class="pastki-matn">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
-    <a class="qoshiq-havolasi" href="https://www.youtube.com/watch?v=fJLQCf4mFP0" target="_blank" rel="noopener noreferrer">♫ I Wanna Be Yours — qo‘shiqni tinglash</a>
   </main>
 
   <script>
     const canvas = document.getElementById('sevgi-yuragi');
     const ctx = canvas.getContext('2d');
+
     const phrases = [
       'SENI SEVAMAN', 'I LOVE YOU', 'Я ТЕБЯ ЛЮБЛЮ', 'TE QUIERO',
       'JE T’AIME', 'ICH LIEBE DICH', 'SENI SEVIYORUM', '愛してる',
       '사랑해', 'أحبك', 'TI AMO', 'EU TE AMO', 'Я ЛЮБЛЮ ТЕБЯ',
-      'NAKU PENDA', 'Kocham cię', 'AŠ TAVE MYLIU', 'Szeretlek'
+      'KOCHAM CIĘ', 'AŠ TAVE MYLIU', 'SZERETLEK', 'MİNI SEVİRƏM'
     ];
+
     const rows = [];
     for (let y = -1.12; y <= 1.12; y += 0.085) {
       for (let x = -1.23; x <= 1.23; x += 0.12) {
@@ -60,7 +74,7 @@
       const turn = Math.sin(angle);
       const face = Math.cos(angle);
 
-      rows.forEach((point, index) => {
+      rows.forEach((point) => {
         const depth = Math.sqrt(Math.max(0, 1 - Math.min(1, point.x * point.x + point.y * point.y) * 0.45));
         const rotatedX = point.x * face + depth * turn * 0.34;
         const z = -point.x * turn + depth * face * 0.34;
@@ -68,15 +82,19 @@
         const px = cx + rotatedX * scale * perspective;
         const py = cy - point.y * scale * perspective;
         const alpha = Math.max(0.35, Math.min(1, 0.72 + z * 0.2));
-        const frontColor = z > -0.05 ? `rgba(255, ${168 + Math.floor(alpha * 40)}, ${205 + Math.floor(alpha * 25)}, ${alpha})` : `rgba(174, 92, 139, ${alpha * 0.78})`;
+        const color = z > -0.05
+          ? `rgba(255, ${168 + Math.floor(alpha * 40)}, ${205 + Math.floor(alpha * 25)}, ${alpha})`
+          : `rgba(174, 92, 139, ${alpha * 0.78})`;
+
         ctx.font = `${Math.max(7, scale * 0.052)}px Arial, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = z > 0 ? 'rgba(255, 115, 176, .8)' : 'transparent';
         ctx.shadowBlur = z > 0 ? 8 : 0;
-        ctx.fillStyle = frontColor;
+        ctx.fillStyle = color;
         ctx.fillText(point.phrase, px, py);
       });
+
       ctx.shadowBlur = 0;
       requestAnimationFrame(draw);
     }
