@@ -1,206 +1,21 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#09040b" />
-  <meta name="description" content="Turli tillada yozilgan sevgi so‘zlari bilan porlayotgan 3D yurak animatsiyasi." />
-  <title>Faqat sen uchun ❤️</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000">
+  <title> </title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="music-bg" aria-hidden="true">
-    <iframe
-      id="music-frame"
-      title="Fon musiqasi"
-      src="https://www.youtube-nocookie.com/embed/fukGbiPuBjU?autoplay=1&mute=0&controls=0&loop=1&playlist=fukGbiPuBjU&playsinline=1&enablejsapi=1"
-      allow="autoplay; encrypted-media; picture-in-picture"
-      referrerpolicy="strict-origin-when-cross-origin"
-    ></iframe>
-  </div>
-
-  <div class="vignette" aria-hidden="true"></div>
-  <div class="bokeh" aria-hidden="true"></div>
-  <div class="dust" id="dust" aria-hidden="true"></div>
-  <div class="petals" id="petals" aria-hidden="true"></div>
-
-  <main class="scene">
-    <p class="eyebrow">DUNYODAGI BARCHA TILLARDA…</p>
-    <h1>Faqat sen uchun</h1>
-
-    <div class="heart-shell" role="img" aria-label="Turli tillarda seni sevaman yozilgan, porlab aylanayotgan yurak">
-      <div class="halo"></div>
-      <canvas id="heart-canvas"></canvas>
-    </div>
-
-    <p class="footer-text">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
-    <p class="music-note" id="music-note" aria-live="polite"></p>
+  <main class="sahifa">
+    <img
+      class="asosiy-rasm"
+      src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Macaque_showing_the_middle_finger.jpg"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    >
   </main>
-
-  <script>
-    const canvas = document.getElementById('heart-canvas');
-    const ctx = canvas.getContext('2d');
-
-    const phrases = [
-      'I LOVE YOU', 'SENI SEVAMAN', 'TE QUIERO', 'JE T’AIME',
-      'ICH LIEBE DICH', '愛してる', '사랑해', 'Я ТЕБЯ ЛЮБЛЮ',
-      'TI AMO', 'EU TE AMO', 'SENI SEVIYORUM', 'MİNI SEVİRƏM',
-      'أحبك', 'KOCHAM CIĘ', 'AŠ TAVE MYLIU', 'SZERETLEK'
-    ];
-
-    let width = 0;
-    let height = 0;
-    let dpr = 1;
-
-    function heartOutlinePath(cx, cy, scaleX, scaleY) {
-      ctx.beginPath();
-      for (let i = 0; i <= 360; i++) {
-        const t = (i / 360) * Math.PI * 2;
-        const x = 16 * Math.pow(Math.sin(t), 3) / 17;
-        const y = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17;
-        const px = cx + x * scaleX;
-        const py = cy - y * scaleY;
-        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-      }
-      ctx.closePath();
-    }
-
-    function resizeCanvas() {
-      const rect = canvas.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drawHeart();
-    }
-
-    function drawHeart() {
-      if (!width || !height) return;
-
-      const cx = width / 2;
-      const cy = height / 2;
-      const scaleX = Math.min(width * 0.42, height * 0.42);
-      const scaleY = Math.min(height * 0.43, width * 0.47);
-
-      // Background glow
-      ctx.clearRect(0, 0, width, height);
-      const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, scaleY * 1.5);
-      glow.addColorStop(0, 'rgba(255, 120, 177, 0.18)');
-      glow.addColorStop(0.5, 'rgba(132, 18, 73, 0.1)');
-      glow.addColorStop(1, 'rgba(9, 4, 11, 0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
-
-      heartOutlinePath(cx, cy, scaleX, scaleY);
-      const fill = ctx.createLinearGradient(0, cy - scaleY, 0, cy + scaleY);
-      fill.addColorStop(0, 'rgba(255, 151, 198, 0.75)');
-      fill.addColorStop(0.4, 'rgba(198, 64, 120, 0.78)');
-      fill.addColorStop(1, 'rgba(54, 12, 38, 0.92)');
-      ctx.shadowColor = 'rgba(255, 97, 171, 0.8)';
-      ctx.shadowBlur = 26;
-      ctx.fillStyle = fill;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = 'rgba(255, 224, 237, 0.8)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Phrase fill inside heart
-      ctx.save();
-      ctx.clip();
-      const fontSize = Math.max(8.5, Math.min(11, width * 0.022));
-      ctx.font = `600 ${fontSize}px Arial, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const rows = 16;
-      const gapY = (scaleY * 1.5) / rows;
-      const startY = cy - scaleY * 0.72;
-
-      for (let row = 0; row < rows; row++) {
-        const y = startY + row * gapY;
-        const offset = Math.sin((row + 1) * 0.8) * 12;
-        const usableX = scaleX * (0.9 - row * 0.015);
-        const textGap = Math.max(22, width * 0.055);
-        let x = cx - usableX * 0.9;
-
-        for (let col = 0; col < 9; col++) {
-          const text = phrases[(row * 3 + col + Math.floor(row / 2)) % phrases.length];
-          const alpha = 0.55 + (Math.sin((row + col) * 0.7 + performance.now() / 700) + 1) * 0.2;
-          ctx.fillStyle = `rgba(${255}, ${190 + (col % 3) * 12}, ${228}, ${alpha})`;
-          ctx.shadowColor = 'rgba(255, 123, 183, 0.55)';
-          ctx.shadowBlur = 7;
-          ctx.fillText(text, x + offset * 0.15, y, textGap * 1.6);
-          x += textGap;
-        }
-      }
-      ctx.restore();
-    }
-
-    function animate() {
-      const now = performance.now() * 0.001;
-      const rotation = now * 0.28;
-      const cx = width / 2;
-      const cy = height / 2;
-      const scaleX = Math.min(width * 0.42, height * 0.42);
-      const scaleY = Math.min(height * 0.43, width * 0.47);
-
-      ctx.clearRect(0, 0, width, height);
-      ctx.save();
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-      ctx.translate(-cx, -cy);
-      drawHeart();
-      ctx.restore();
-      requestAnimationFrame(animate);
-    }
-
-    const dust = document.getElementById('dust');
-    for (let i = 0; i < 42; i++) {
-      const s = document.createElement('span');
-      s.className = 'sparkle';
-      s.style.setProperty('--x', `${Math.random() * 100}%`);
-      s.style.setProperty('--y', `${Math.random() * 100}%`);
-      s.style.setProperty('--size', `${2 + Math.random() * 4}px`);
-      s.style.setProperty('--delay', `${(Math.random() * -10).toFixed(2)}s`);
-      s.style.setProperty('--duration', `${4 + Math.random() * 7}s`);
-      dust.appendChild(s);
-    }
-
-    const petalBox = document.getElementById('petals');
-    for (let i = 0; i < 18; i++) {
-      const p = document.createElement('span');
-      p.className = 'petal';
-      p.style.setProperty('--left', `${Math.random() * 100}%`);
-      p.style.setProperty('--delay', `${(Math.random() * -20).toFixed(2)}s`);
-      p.style.setProperty('--duration', `${14 + Math.random() * 14}s`);
-      p.style.setProperty('--drift', `${(-90 + Math.random() * 180).toFixed(0)}px`);
-      petalBox.appendChild(p);
-    }
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    requestAnimationFrame(animate);
-
-    const musicNote = document.getElementById('music-note');
-    const frame = document.getElementById('music-frame');
-    let activated = false;
-    function activateMusic() {
-      if (activated) return;
-      activated = true;
-      try {
-        frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":[]}','*');
-        frame.contentWindow.postMessage('{"event":"command","func":"unMute","args":[]}','*');
-      } catch (e) {}
-    }
-    window.addEventListener('pointerdown', activateMusic, { once: true });
-    window.addEventListener('keydown', activateMusic, { once: true });
-    setTimeout(() => {
-      if (!activated) {
-        musicNote.textContent = 'Agar musiqani eshitmasangiz, sahifaga bir marta teging — brauzer autoplayni cheklashi mumkin.';
-      }
-    }, 3500);
-  </script>
 </body>
 </html>
