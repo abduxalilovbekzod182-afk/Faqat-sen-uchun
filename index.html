@@ -1,63 +1,58 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#09040b">
-  <meta name="description" content="Turli tillardagi sevgi so‘zlari bilan porlayotgan 3D yurak.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#09040b" />
+  <meta name="description" content="Turli tillada yozilgan sevgi so‘zlari bilan porlayotgan 3D yurak animatsiyasi." />
   <title>Faqat sen uchun ❤️</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Berilgan YouTube qo‘shig‘i fon videosi sifatida ulanadi. -->
-  <div class="music-background" aria-hidden="true">
+  <div class="music-bg" aria-hidden="true">
     <iframe
-      id="music-player"
+      id="music-frame"
       title="Fon musiqasi"
       src="https://www.youtube-nocookie.com/embed/fukGbiPuBjU?autoplay=1&mute=0&controls=0&loop=1&playlist=fukGbiPuBjU&playsinline=1&enablejsapi=1"
       allow="autoplay; encrypted-media; picture-in-picture"
-      referrerpolicy="strict-origin-when-cross-origin">
-    </iframe>
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
   </div>
-  <div class="background-shade" aria-hidden="true"></div>
+
+  <div class="vignette" aria-hidden="true"></div>
   <div class="bokeh" aria-hidden="true"></div>
-  <div class="particles" id="particles" aria-hidden="true"></div>
+  <div class="dust" id="dust" aria-hidden="true"></div>
   <div class="petals" id="petals" aria-hidden="true"></div>
 
   <main class="scene">
-    <header class="heading">
-      <p class="eyebrow">BARCHA TILLARDA BITTA TUYG‘U</p>
-      <h1>Faqat sen uchun</h1>
-    </header>
+    <p class="eyebrow">DUNYODAGI BARCHA TILLARDA…</p>
+    <h1>Faqat sen uchun</h1>
 
-    <div class="heart-stage" role="img" aria-label="Turli tillarda seni sevaman degan yozuvlardan yasalgan, sekin aylanayotgan nurli yurak">
-      <div class="heart-halo" aria-hidden="true"></div>
-      <div class="heart-3d">
-        <div class="heart-depth" aria-hidden="true"></div>
-        <canvas id="love-heart" aria-hidden="true"></canvas>
-        <div class="heart-glint" aria-hidden="true"></div>
-      </div>
+    <div class="heart-shell" role="img" aria-label="Turli tillarda seni sevaman yozilgan, porlab aylanayotgan yurak">
+      <div class="halo"></div>
+      <canvas id="heart-canvas"></canvas>
     </div>
 
-    <p class="caption">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
+    <p class="footer-text">Bir yurak. Ming xil til. Bitta tuyg‘u. <span>♥</span></p>
     <p class="music-note" id="music-note" aria-live="polite"></p>
   </main>
 
   <script>
-    // So‘zlar yurak konturining ichiga qatorlab joylashadi.
-    const canvas = document.getElementById('love-heart');
+    const canvas = document.getElementById('heart-canvas');
     const ctx = canvas.getContext('2d');
+
     const phrases = [
-      'SENI SEVAMAN', 'I LOVE YOU', 'Я ТЕБЯ ЛЮБЛЮ', 'TE QUIERO',
-      'JE T’AIME', 'ICH LIEBE DICH', 'SENI SEVIYORUM', '愛してる',
-      '사랑해', 'أحبك', 'TI AMO', 'EU TE AMO', 'KOCHAM CIĘ',
-      'AŠ TAVE MYLIU', 'SZERETLEK', 'MİNI SEVİRƏM', 'TE AMO'
+      'I LOVE YOU', 'SENI SEVAMAN', 'TE QUIERO', 'JE T’AIME',
+      'ICH LIEBE DICH', '愛してる', '사랑해', 'Я ТЕБЯ ЛЮБЛЮ',
+      'TI AMO', 'EU TE AMO', 'SENI SEVIYORUM', 'MİNI SEVİRƏM',
+      'أحبك', 'KOCHAM CIĘ', 'AŠ TAVE MYLIU', 'SZERETLEK'
     ];
+
     let width = 0;
     let height = 0;
     let dpr = 1;
 
-    function heartPath(scaleX, scaleY, cx, cy) {
+    function heartOutlinePath(cx, cy, scaleX, scaleY) {
       ctx.beginPath();
       for (let i = 0; i <= 360; i++) {
         const t = (i / 360) * Math.PI * 2;
@@ -70,7 +65,7 @@
       ctx.closePath();
     }
 
-    function resize() {
+    function resizeCanvas() {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
@@ -83,105 +78,128 @@
 
     function drawHeart() {
       if (!width || !height) return;
-      ctx.clearRect(0, 0, width, height);
-      const scaleX = Math.min(width * 0.43, height * 0.42);
-      const scaleY = Math.min(height * 0.43, width * 0.48);
-      const cx = width / 2;
-      const cy = height / 2 + scaleY * 0.015;
 
-      heartPath(scaleX, scaleY, cx, cy);
-      ctx.save();
-      ctx.shadowColor = 'rgba(255, 75, 151, .65)';
-      ctx.shadowBlur = 30;
-      const base = ctx.createLinearGradient(0, cy - scaleY, 0, cy + scaleY);
-      base.addColorStop(0, 'rgba(255, 129, 184, .72)');
-      base.addColorStop(.48, 'rgba(127, 28, 79, .84)');
-      base.addColorStop(1, 'rgba(39, 8, 35, .92)');
-      ctx.fillStyle = base;
+      const cx = width / 2;
+      const cy = height / 2;
+      const scaleX = Math.min(width * 0.42, height * 0.42);
+      const scaleY = Math.min(height * 0.43, width * 0.47);
+
+      // Background glow
+      ctx.clearRect(0, 0, width, height);
+      const glow = ctx.createRadialGradient(cx, cy, 10, cx, cy, scaleY * 1.5);
+      glow.addColorStop(0, 'rgba(255, 120, 177, 0.18)');
+      glow.addColorStop(0.5, 'rgba(132, 18, 73, 0.1)');
+      glow.addColorStop(1, 'rgba(9, 4, 11, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, width, height);
+
+      heartOutlinePath(cx, cy, scaleX, scaleY);
+      const fill = ctx.createLinearGradient(0, cy - scaleY, 0, cy + scaleY);
+      fill.addColorStop(0, 'rgba(255, 151, 198, 0.75)');
+      fill.addColorStop(0.4, 'rgba(198, 64, 120, 0.78)');
+      fill.addColorStop(1, 'rgba(54, 12, 38, 0.92)');
+      ctx.shadowColor = 'rgba(255, 97, 171, 0.8)';
+      ctx.shadowBlur = 26;
+      ctx.fillStyle = fill;
       ctx.fill();
       ctx.shadowBlur = 0;
-      ctx.clip();
+      ctx.strokeStyle = 'rgba(255, 224, 237, 0.8)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
 
-      const rowStep = Math.max(12, Math.min(16, width * .042));
-      const fontSize = Math.max(7, Math.min(10, width * .026));
+      // Phrase fill inside heart
+      ctx.save();
+      ctx.clip();
+      const fontSize = Math.max(8.5, Math.min(11, width * 0.022));
       ctx.font = `600 ${fontSize}px Arial, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      let row = 0;
-      for (let y = cy - scaleY * .91; y <= cy + scaleY * .9; y += rowStep) {
-        const normalizedY = (cy - y) / scaleY;
-        const span = scaleX * Math.max(.08, Math.sqrt(Math.max(0, 1 - normalizedY * normalizedY)) * 1.12);
-        const gap = Math.max(38, fontSize * 6.4);
-        let col = 0;
-        for (let x = cx - span + gap / 2; x < cx + span; x += gap) {
-          const phrase = phrases[(row * 3 + col * 5 + Math.floor(row / 2)) % phrases.length];
-          const shimmer = .72 + .26 * (Math.sin(performance.now() / 900 + row * .43 + col) * .5 + .5);
-          ctx.fillStyle = `rgba(255, ${188 + (col % 3) * 15}, ${218 + (row % 2) * 18}, ${shimmer})`;
-          ctx.shadowColor = 'rgba(255, 112, 177, .72)';
+      const rows = 16;
+      const gapY = (scaleY * 1.5) / rows;
+      const startY = cy - scaleY * 0.72;
+
+      for (let row = 0; row < rows; row++) {
+        const y = startY + row * gapY;
+        const offset = Math.sin((row + 1) * 0.8) * 12;
+        const usableX = scaleX * (0.9 - row * 0.015);
+        const textGap = Math.max(22, width * 0.055);
+        let x = cx - usableX * 0.9;
+
+        for (let col = 0; col < 9; col++) {
+          const text = phrases[(row * 3 + col + Math.floor(row / 2)) % phrases.length];
+          const alpha = 0.55 + (Math.sin((row + col) * 0.7 + performance.now() / 700) + 1) * 0.2;
+          ctx.fillStyle = `rgba(${255}, ${190 + (col % 3) * 12}, ${228}, ${alpha})`;
+          ctx.shadowColor = 'rgba(255, 123, 183, 0.55)';
           ctx.shadowBlur = 7;
-          ctx.fillText(phrase, x, y, gap * .96);
-          col++;
+          ctx.fillText(text, x + offset * 0.15, y, textGap * 1.6);
+          x += textGap;
         }
-        row++;
       }
       ctx.restore();
-
-      heartPath(scaleX, scaleY, cx, cy);
-      ctx.strokeStyle = 'rgba(255, 209, 229, .86)';
-      ctx.lineWidth = 1.35;
-      ctx.shadowColor = 'rgba(255, 86, 164, .9)';
-      ctx.shadowBlur = 16;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
     }
 
-    window.addEventListener('resize', resize);
-    resize();
+    function animate() {
+      const now = performance.now() * 0.001;
+      const rotation = now * 0.28;
+      const cx = width / 2;
+      const cy = height / 2;
+      const scaleX = Math.min(width * 0.42, height * 0.42);
+      const scaleY = Math.min(height * 0.43, width * 0.47);
 
-    // Mayin yaltirash zarralari va atirgul yaproqlari.
-    const particleBox = document.getElementById('particles');
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      ctx.translate(-cx, -cy);
+      drawHeart();
+      ctx.restore();
+      requestAnimationFrame(animate);
+    }
+
+    const dust = document.getElementById('dust');
     for (let i = 0; i < 42; i++) {
-      const dot = document.createElement('span');
-      dot.className = 'sparkle';
-      dot.style.setProperty('--x', `${Math.random() * 100}%`);
-      dot.style.setProperty('--y', `${Math.random() * 100}%`);
-      dot.style.setProperty('--delay', `${Math.random() * -8}s`);
-      dot.style.setProperty('--duration', `${4 + Math.random() * 7}s`);
-      dot.style.setProperty('--size', `${2 + Math.random() * 3}px`);
-      particleBox.appendChild(dot);
+      const s = document.createElement('span');
+      s.className = 'sparkle';
+      s.style.setProperty('--x', `${Math.random() * 100}%`);
+      s.style.setProperty('--y', `${Math.random() * 100}%`);
+      s.style.setProperty('--size', `${2 + Math.random() * 4}px`);
+      s.style.setProperty('--delay', `${(Math.random() * -10).toFixed(2)}s`);
+      s.style.setProperty('--duration', `${4 + Math.random() * 7}s`);
+      dust.appendChild(s);
     }
+
     const petalBox = document.getElementById('petals');
-    for (let i = 0; i < 13; i++) {
-      const petal = document.createElement('span');
-      petal.className = 'petal';
-      petal.style.setProperty('--left', `${Math.random() * 100}%`);
-      petal.style.setProperty('--delay', `${Math.random() * -20}s`);
-      petal.style.setProperty('--duration', `${14 + Math.random() * 16}s`);
-      petal.style.setProperty('--sway', `${-80 + Math.random() * 160}px`);
-      petalBox.appendChild(petal);
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('span');
+      p.className = 'petal';
+      p.style.setProperty('--left', `${Math.random() * 100}%`);
+      p.style.setProperty('--delay', `${(Math.random() * -20).toFixed(2)}s`);
+      p.style.setProperty('--duration', `${14 + Math.random() * 14}s`);
+      p.style.setProperty('--drift', `${(-90 + Math.random() * 180).toFixed(0)}px`);
+      petalBox.appendChild(p);
     }
 
-    // YouTube audio autoplayga ruxsat bersa, ovozni past qilib qo‘yishga harakat qilamiz.
-    const playerFrame = document.getElementById('music-player');
-    const note = document.getElementById('music-note');
-    let playerReady = false;
-    window.onYouTubeIframeAPIReady = function () {};
-    const apiScript = document.createElement('script');
-    apiScript.src = 'https://www.youtube.com/iframe_api';
-    document.head.appendChild(apiScript);
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(animate);
 
-    function onPlayerReady(event) {
-      playerReady = true;
-      event.target.setVolume(18);
-      event.target.playVideo();
+    const musicNote = document.getElementById('music-note');
+    const frame = document.getElementById('music-frame');
+    let activated = false;
+    function activateMusic() {
+      if (activated) return;
+      activated = true;
+      try {
+        frame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":[]}','*');
+        frame.contentWindow.postMessage('{"event":"command","func":"unMute","args":[]}','*');
+      } catch (e) {}
     }
-    window.onYouTubeIframeAPIReady = function () {
-      new YT.Player('music-player', {
-        events: { onReady: onPlayerReady }
-      });
-    };
+    window.addEventListener('pointerdown', activateMusic, { once: true });
+    window.addEventListener('keydown', activateMusic, { once: true });
     setTimeout(() => {
-      if (!playerReady) note.textContent = 'Brauzer ovozli avtomatik ijroni cheklasa, qo‘shiq boshlanmasligi mumkin.';
+      if (!activated) {
+        musicNote.textContent = 'Agar musiqani eshitmasangiz, sahifaga bir marta teging — brauzer autoplayni cheklashi mumkin.';
+      }
     }, 3500);
   </script>
 </body>
