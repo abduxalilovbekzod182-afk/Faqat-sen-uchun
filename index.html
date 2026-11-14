@@ -38,7 +38,7 @@
         </button>
       </div>
 
-      <audio id="bg-music" loop preload="none" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+      <audio id="bg-music" loop preload="auto" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9f3d50.mp3"></audio>
 
       <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Agar yana qayta tanlash imkonim bo‘lganida ham, qalbim yana seni tanlagan bo‘lardi. Sen — mening eng go‘zal tasodifim va eng aziz tilagimsan. ❤️</p>
       <p class="imzo">Butun mehrim bilan — faqat sen uchun</p>
@@ -61,7 +61,7 @@
 
     const musicToggle = document.getElementById('music-toggle');
     const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.16;
+    bgMusic.volume = 0.12;
 
     musicToggle.addEventListener('click', async () => {
       if (bgMusic.paused) {
@@ -72,7 +72,7 @@
           musicToggle.setAttribute('aria-pressed', 'true');
         } catch (error) {
           console.log('Musiqani ijro etib bo‘lmadi:', error);
-          musicToggle.textContent = 'Musiqa ijro etilmadi';
+          musicToggle.textContent = '♫ Musiqa xatoligi';
         }
       } else {
         bgMusic.pause();
