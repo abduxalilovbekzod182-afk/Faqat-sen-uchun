@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#8f214f">
+  <meta name="description" content="Faqat sen uchun — yurakdan yozilgan iliq tilaklar.">
+  <title>Faqat sen uchun ❤️</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="orqa-fon" aria-hidden="true"></div>
+  <div class="yulduzlar" aria-hidden="true"></div>
+  <div class="uchuvchi-yuraklar" id="uchuvchi-yuraklar" aria-hidden="true"></div>
+
+  <main class="sahifa">
+    <section class="karta" aria-labelledby="sarlavha">
+      <div class="yorqin-chiziq" aria-hidden="true"></div>
+      <div class="gul-yuqori" aria-hidden="true">✿</div>
+      <div class="yurak" aria-label="Yurak">💖</div>
+      <p class="kichik-sarlavha">ENG SAMIMIY TUYG'ULAR BILAN</p>
+      <h1 id="sarlavha">Faqat sen uchun</h1>
+      <div class="ajratgich" aria-hidden="true"><span>✦</span></div>
+      <p class="tilak">Ba'zi insonlar hayotga kirib kelib, uni yanada go'zal qiladi. Sen ham mening kunlarimga tabassum, qalbimga esa iliqlik olib kirgan insonsan.</p>
+      <p class="tilak ikkinchi">Ushbu kichik sahifa — senga atalgan samimiy bir tilak. Har doim yuzingdan tabassum arimasin. 🌷</p>
+      <div class="gullar" aria-hidden="true">🌹 <span>✨</span> 🌸 <span>✨</span> 🌹</div>
+      <button class="tugma" id="tilak-tugmasi" type="button">
+        <span>Yuragimdan senga</span><span class="tugma-yurak" aria-hidden="true">♡</span>
+      </button>
+      <p class="yashirin-tilak" id="yashirin-tilak" aria-live="polite">Sen borliging bilan olamni go'zal qilasan. ❤️</p>
+      <p class="imzo">Mehr bilan, faqat sen uchun</p>
+    </section>
+  </main>
+
+  <script>
+    const hearts = document.getElementById('uchuvchi-yuraklar');
+    const heartIcons = ['♡', '♥', '❤'];
+    for (let i = 0; i < 20; i++) {
+      const heart = document.createElement('span');
+      heart.className = 'uchuvchi-yurak';
+      heart.textContent = heartIcons[i % heartIcons.length];
+      heart.style.setProperty('--left', `${Math.random() * 100}%`);
+      heart.style.setProperty('--delay', `${Math.random() * -18}s`);
+      heart.style.setProperty('--duration', `${12 + Math.random() * 12}s`);
+      heart.style.setProperty('--size', `${12 + Math.random() * 22}px`);
+      hearts.appendChild(heart);
+    }
+
+    document.getElementById('tilak-tugmasi').addEventListener('click', () => {
+      const wish = document.getElementById('yashirin-tilak');
+      wish.classList.toggle('ko-rinadi');
+      document.getElementById('tilak-tugmasi').setAttribute('aria-expanded', wish.classList.contains('ko-rinadi'));
+    });
+  </script>
+</body>
+</html>
